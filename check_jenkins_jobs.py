@@ -60,8 +60,9 @@ def sendEmail():
     #snd.set_debuglevel(1)
     try:
         snd.sendmail( "Leeeroy" , emails , msg.as_string() )
-    except:
+    except Exception as exc:
         print "Unable to send email to " + str(emails)
+        print exc
     snd.quit()
 
 def epochToSeconds( time ):
@@ -73,8 +74,9 @@ def epochToSeconds( time ):
 def connectToJenkins( user , passwd , url ):
     try:
         jenkinsServer = jenkins.Jenkins( url, username=user, password=passwd )
-    except:
+    except Exception as ex:
         print "Unable to connect to Jenkins URL: " + str(url) + ", Please check URL and Credentials"
+        print ex
         sys.exit(3)
     return jenkinsServer
 
@@ -109,8 +111,9 @@ def main():
     for job in jobs:
         try:
             info = jenkins.get_job_info(job,depth=0,fetch_all_builds=False) #get the info of the job (last 100 builds)
-        except:
+        except Exception as e:
             print "Unable to fetch builds from job: " + job
+            print e
             sys.exit(3)
         counter=0
         for build in info['builds']:
@@ -120,8 +123,9 @@ def main():
             number = build['number']
             try:
                 buildInfo = jenkins.get_build_info(job , number ,depth=0) #get build information for each fetched build
-            except:
+            except Exception as exp:
                 print "Unable to get build information from Job: " + job + ", Job Number: " + number
+                print exp
                 sys.exit(3)
             buildTime=epochToSeconds( time=buildInfo['timestamp'] ) #build time in Seconds
             currentTime = time.time() #the current time
